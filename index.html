@@ -167,9 +167,9 @@ function renderCal(){
   const dl=new Date(S.date+'T00:00');$('#dlabel').textContent=isNaN(dl)?'Day preview':dl.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
   const s=toMin(S.start),e=Math.round(s+totalW());
   const gs=Math.max(0,Math.floor(s/60)*60-60),ge0=Math.ceil(Math.max(e,s+60)/60)*60+60;
-  // keep the time measure running to the bottom of the window
-  const mh=matchMedia('(max-width:820px)').matches?innerHeight*.8:$('.main').clientHeight,avail=mh-$('.hdr').offsetHeight-64,ge=Math.max(ge0,gs+Math.ceil(avail/(84/60)/60)*60);
-  const ppm=84/60;cal.style.height=((ge-gs)*ppm)+'px';
+  // the measure fills the window exactly and is cut off at the bottom; it only scrolls when the schedule itself is taller
+  const ppm=84/60,mh=matchMedia('(max-width:820px)').matches?innerHeight*.8:$('.main').clientHeight,availPx=mh-$('.hdr').offsetHeight-74,H=Math.max((ge0-gs)*ppm,availPx),ge=gs+Math.floor(H/ppm/15)*15;
+  cal.style.height=H+'px';
   for(let m=gs;m<=ge;m+=15){
     const y=(m-gs)*ppm;
     if(m%60===0){const dayb=m%1440===0&&m>gs,dd=new Date(S.date+'T00:00');dd.setDate(dd.getDate()+Math.floor(m/1440));cal.append(el('div',{class:'hr'+(dayb?' day':''),style:'top:'+y+'px'},el('b',{},fmt(m)),dayb?el('span',{class:'dayl'},dd.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})):''))}
