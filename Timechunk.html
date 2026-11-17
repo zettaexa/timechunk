@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timechunk</title>
+<style>
+:root{--font:-apple-system,"Segoe UI",Roboto,Verdana,sans-serif;--bg:#ECEFF3;--panel:#fff;--ink:#171C26;--mute:#5E6878;--line:#D8DDE5;--accent:#4F7CFF;--accent-ink:#fff;--hatch:#E3E7ED;--now:#E5384F;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--panel:#0B0B0C;--ink:#ECEEF2;--mute:#8F97A5;--line:#222428;--hatch:#17181B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#000;--panel:#0B0B0C;--ink:#ECEEF2;--mute:#8F97A5;--line:#222428;--hatch:#17181B;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;height:100%;display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);background:var(--bg);color:var(--ink);font:15px/1.45 var(--font);overflow:hidden}
+button,input,textarea{font-family:inherit}
+.side{grid-column:1;grid-row:2;min-height:0;overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:18px 16px}
+.side section{padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.side section:last-child{border:0;margin:0}
+h2{font-size:15px;margin:0 0 12px;font-weight:600}
+.right{display:contents}
+.top{grid-column:1/-1;grid-row:1;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+.top h1{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0}
+.top nav{display:flex;gap:8px}
+.main{grid-column:2;grid-row:2;min-height:0;overflow:auto;padding:18px 24px 40px}
+.pop{position:fixed;right:12px;top:calc(56px + env(safe-area-inset-top,0px));z-index:40;width:min(330px,calc(100vw - 24px));background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 10px 34px rgba(0,0,0,.35)}
+.pop[hidden]{display:none}
+.pop h3{font-size:13px;font-weight:600;margin:14px 0 8px}.pop h3:first-of-type{margin-top:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+label{display:block;font-size:13px;color:var(--mute)}
+input[type=time],input[type=date],input[type=number],input[type=text]{width:100%;margin-top:4px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dur{display:flex;align-items:center;gap:3px;margin-top:4px;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:0 12px;color:var(--mute);flex:1}
+.dur input[type=number]{width:3.4ch;margin:0;padding:8px 0;border:0;border-radius:0;background:none;text-align:right;-moz-appearance:textfield;appearance:textfield}
+.dur input::-webkit-inner-spin-button{display:none}
+.dur:focus-within{outline:2px solid var(--accent)}
+.dur input:focus-visible{outline:0}
+.warn{margin:10px 0 0;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,#E5586E 22%,var(--panel));font-size:13px}
+.sw{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px;align-items:center}
+.sw button{width:24px;height:24px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line);background:var(--c);cursor:pointer;padding:0}
+.sw button[aria-pressed=true]{box-shadow:0 0 0 2px var(--ink)}
+.sw input[type=color]{width:30px;height:26px;padding:0;border:0;background:none;cursor:pointer}
+.todo{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.todo span{flex:1;overflow-wrap:anywhere}
+.todo.done span{text-decoration:line-through;color:var(--mute)}
+.todo input{accent-color:var(--accent)}
+.x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:18px;line-height:1}
+.row{display:flex;gap:8px;margin-top:10px;align-items:center}
+.row input{margin:0}
+.btn{padding:7px 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn.alt{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.btn.alt[aria-pressed=true],.btn.alt[aria-expanded=true]{border-color:var(--ink)}
+.btn[hidden]{display:none}
+.seg{display:flex;gap:6px}.seg .btn{flex:1}
+.muted{color:var(--mute);font-size:13px}
+.hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;gap:8px;flex-wrap:wrap}
+.hdr h2{margin:0;font-size:22px;font-weight:600}
+.cal{position:relative;margin-left:64px}
+.hr{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
+.hr b,.hf b{position:absolute;left:-64px;top:-9px;width:54px;text-align:right;font-weight:600;font-size:12px;color:var(--ink)}
+.hf{position:absolute;left:0;right:0;border-top:1px dashed var(--line);opacity:.6}
+.hf b{font-weight:400;color:var(--mute);font-size:11px}
+.hr.day{border-top:2px solid var(--mute)}.dayl{position:absolute;left:8px;top:4px;font-size:11px;color:var(--mute)}
+.tk{position:absolute;left:-7px;width:7px;border-top:1px solid var(--mute);opacity:.7}
+.now{position:absolute;left:-6px;right:0;border-top:2px solid var(--now);z-index:5;pointer-events:none}
+.now::before{content:"";position:absolute;left:-1px;top:-6px;width:10px;height:10px;border-radius:50%;background:var(--now)}
+.blk{position:absolute;left:6px;right:6px;border:0;border-left:5px solid var(--c);border-radius:6px;padding:4px 10px;overflow:hidden;background:color-mix(in srgb,var(--c) 26%,var(--panel));cursor:pointer;text-align:left;color:var(--ink);font:inherit;font-size:13px;line-height:1.25;z-index:2}
+.blk[aria-pressed=true]{box-shadow:0 0 0 2px var(--ink)}
+.blk strong{font-weight:600;font-size:14px}
+.blk small{display:block;color:var(--mute);font-size:12px}
+.blk.tight{display:flex;gap:10px;align-items:center;padding-top:0;padding-bottom:0}
+.blk.tight small{display:inline}
+.brk{position:absolute;left:6px;right:6px;border-radius:4px;background:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px);color:var(--mute);font-size:11px;padding:0 10px;overflow:hidden;display:flex;align-items:center}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:13px;z-index:60;max-width:90vw}
+#toast[hidden]{display:none}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);width:min(440px,92vw)}
+dialog textarea{width:100%;height:150px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:12px/1.4 ui-monospace,monospace;padding:8px}
+@media(max-width:820px){body{height:auto;overflow:auto;grid-template-columns:1fr;grid-template-rows:auto auto auto}.top{grid-column:1;position:sticky;top:env(safe-area-inset-top,0px);z-index:30}.main{grid-column:1;grid-row:2;overflow:visible;padding:16px 12px 24px}.side{grid-column:1;grid-row:3;border-right:0;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<aside class="side">
+<section>
+<h2>My window</h2>
+<label>Date<input type="date" id="date"></label>
+<div class="grid2">
+<label>Start<input type="time" id="start"></label>
+<label>End<span id="nd"></span><input type="time" id="end"></label>
+</div>
+<label style="margin-top:10px">Work time<div id="wt" style="display:flex"></div></label>
+<div class="grid2">
+<label>Chunks<input type="number" id="n" min="1" max="12"></label>
+<label>Break (min)<input type="number" id="brk" min="0" max="120"></label>
+</div>
+<div class="warn" id="warn" hidden></div>
+</section>
+<section>
+<h2>Chunks</h2>
+<p class="muted" style="margin:0 0 12px">Select a block in the preview to edit it.</p>
+<div id="editor"></div>
+</section>
+</aside>
+<div class="right">
+<header class="top">
+<h1>Timechunk</h1>
+<nav>
+<button class="btn" id="bexp">Export</button>
+<button class="btn alt" id="bset" aria-expanded="false">Settings</button>
+</nav>
+</header>
+<div class="pop" id="pset" hidden>
+<h2>Settings</h2>
+<h3>Theme</h3>
+<div class="seg" id="themes"></div>
+<label style="margin-top:12px">Accent color</label>
+<div class="sw" id="accents"></div>
+<h3>Export</h3>
+<label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="ib"> Include breaks as events</label>
+</div>
+<main class="main">
+<div class="hdr"><h2 id="dlabel">Day preview</h2><span class="muted" id="sum"></span></div>
+<div class="cal" id="cal"></div>
+</main>
+</div>
+<div id="toast" hidden></div>
+<dialog id="dlg"><p class="muted" id="dmsg" style="margin-top:0"></p><textarea id="fb" readonly></textarea><div class="row" style="justify-content:flex-end"><button class="btn" id="dx">Close</button></div></dialog>
+<script>
+(()=>{const u=navigator.userAgent;const f=/Android/i.test(u)?'Roboto':/iPhone|iPad|iPod|Macintosh|Mac OS/i.test(u)?'-apple-system,BlinkMacSystemFont,"SF Pro Text"':/Windows/i.test(u)?'"Segoe UI"':'Verdana';document.documentElement.style.setProperty('--font',f+',"Segoe UI",Roboto,Verdana,sans-serif')})();
+const PRESETS=['#E5586E','#F2994A','#E0B400','#27AE87','#2D9CDB','#9B6BDF','#8A6D4B'];
+const ACCENTS=['#4F7CFF','#27AE87','#E5586E','#F2994A','#9B6BDF','#E0B400'];
+const $=s=>document.querySelector(s);
+const pad=n=>String(n).padStart(2,'0');
+function el(t,a={},...c){const e=document.createElement(t);for(const k in a){if(k==='class')e.className=a[k];else if(k.startsWith('on'))e.addEventListener(k.slice(2),a[k]);else e.setAttribute(k,a[k])}c.flat().forEach(x=>e.append(x));return e}
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+// start = now, rounded up to the next 5 minutes (20:36 -> 20:40, 9:01 -> 9:05)
+const nxt=new Date(Math.floor(Date.now()/300000)*300000+300000);
+let S={date:ymd(nxt),start:pad(nxt.getHours())+':'+pad(nxt.getMinutes()),n:4,brk:10,L:52.5,ib:false,sel:0,theme:'system',accent:'#4F7CFF',chunks:[]};
+try{const r=JSON.parse(localStorage.getItem('timechunk3'));if(r&&r.chunks)Object.assign(S,{n:r.n||S.n,brk:r.brk??S.brk,L:r.L||S.L,ib:!!r.ib,theme:r.theme||'system',accent:r.accent||S.accent,chunks:r.chunks})}catch(e){}
+const save=()=>{try{localStorage.setItem('timechunk3',JSON.stringify({n:S.n,brk:S.brk,L:S.L,ib:S.ib,theme:S.theme,accent:S.accent,chunks:S.chunks}))}catch(e){}};
+function sync(){while(S.chunks.length<S.n)S.chunks.push({name:'',color:null,len:null,todos:[]});if(S.sel>=S.n)S.sel=S.n-1}
+const toMin=v=>{const[a,b]=(v||'0:0').split(':').map(Number);return a*60+b};
+const hhmm=m=>pad(Math.floor(m/60)%24)+':'+pad(m%60);
+const fmt=m=>{const h=Math.floor(m/60)%24,mm=m%60;return(h%12||12)+(mm?':'+pad(mm):'')+(h<12?' AM':' PM')};
+const fmtL=m=>{const h=Math.floor(m/60)%24,mm=m%60;return(h%12||12)+':'+pad(mm)+(h<12?' AM':' PM')};
+const dur=m=>{const r=Math.round(m);return r>=60?Math.floor(r/60)+' h'+(r%60?' '+r%60+' min':''):r+' min'};
+
+// chunk lengths: a chunk with its own work time keeps it, the rest use the even split (S.L)
+const lens=()=>{sync();const a=[];for(let i=0;i<S.n;i++)a.push(S.chunks[i].len||S.L);return a};
+const totalW=()=>lens().reduce((x,y)=>x+y,0)+Math.max(0,S.n-1)*S.brk;
+function solveL(W){let f=0,a=0;for(let i=0;i<S.n;i++){const c=S.chunks[i];if(c.len)f+=c.len;else a++}if(a)S.L=(W-Math.max(0,S.n-1)*S.brk-f)/a}
+function layout(){
+  const L=lens(),s=toMin(S.start),b=S.brk;
+  if(L.some(x=>x<5))return{items:[],msg:'Each chunk needs at least 5 minutes. Use fewer chunks, shorter breaks or more work time.'};
+  const items=[];let cur=s;
+  L.forEach((len,i)=>{
+    items.push({type:'chunk',i,s:Math.round(cur),e:Math.round(cur+len)});cur+=len;
+    if(i<L.length-1&&b>0){items.push({type:'break',s:Math.round(cur),e:Math.round(cur+b)})}
+    cur+=b;
+  });
+  if(Math.round(cur-b-s)>1440)return{items:[],msg:'A window can be at most 24 hours.'};
+  return{items,msg:''};
+}
+
+function renderCal(){
+  const L=layout(),cal=$('#cal');cal.replaceChildren();
+  $('#warn').hidden=!L.msg;$('#warn').textContent=L.msg;
+  $('#sum').textContent=L.msg?'':dur(totalW())+' total · '+S.n+' chunks · '+S.brk+' min breaks';
+  const dl=new Date(S.date+'T00:00');$('#dlabel').textContent=isNaN(dl)?'Day preview':dl.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  const s=toMin(S.start),e=Math.round(s+totalW());
+  const gs=Math.max(0,Math.floor(s/60)*60-60),ge0=Math.ceil(Math.max(e,s+60)/60)*60+60;
+  // keep the time measure running to the bottom of the window
+  const mh=matchMedia('(max-width:820px)').matches?innerHeight*.8:$('.main').clientHeight,avail=mh-$('.hdr').offsetHeight-64,ge=Math.max(ge0,gs+Math.ceil(avail/(84/60)/60)*60);
+  const ppm=84/60;cal.style.height=((ge-gs)*ppm)+'px';
+  for(let m=gs;m<=ge;m+=15){
+    const y=(m-gs)*ppm;
+    if(m%60===0){const dayb=m%1440===0&&m>gs,dd=new Date(S.date+'T00:00');dd.setDate(dd.getDate()+Math.floor(m/1440));cal.append(el('div',{class:'hr'+(dayb?' day':''),style:'top:'+y+'px'},el('b',{},fmt(m)),dayb?el('span',{class:'dayl'},dd.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})):''))}
+    else if(m%30===0)cal.append(el('div',{class:'hf',style:'top:'+y+'px'},el('b',{},':30')));
+    else cal.append(el('div',{class:'tk',style:'top:'+y+'px'}));
+  }
+  L.items.forEach(it=>{
+    const top=(it.s-gs)*ppm,h=Math.max(8,(it.e-it.s)*ppm-2);
+    if(it.type==='break'){cal.append(el('div',{class:'brk',style:`top:${top+1}px;height:${h}px`},h>14?'Break · '+(it.e-it.s)+' min':''));return}
+    const c=S.chunks[it.i],done=c.todos.filter(t=>t.d).length,tight=h<50;
+    cal.append(el('button',{class:'blk'+(tight?' tight':''),style:`top:${top+1}px;height:${h}px;--c:${c.color||'var(--accent)'}`,'aria-pressed':String(it.i===S.sel),onclick:()=>{S.sel=it.i;save();renderAll()}},
+      el('strong',{},c.name||'Untitled'),
+      el('small',{},fmtL(it.s)+' – '+fmtL(it.e)+' · '+dur(it.e-it.s)+(c.todos.length?' · '+done+'/'+c.todos.length+' done':''))));
+  });
+  {
+    const d=new Date(),off=Math.round((new Date(ymd(d)+'T00:00')-new Date(S.date+'T00:00'))/864e5),nm=off*1440+d.getHours()*60+d.getMinutes()+d.getSeconds()/60;
+    if(nm>=gs&&nm<=ge)cal.append(el('div',{class:'now',style:'top:'+((nm-gs)*ppm)+'px'}));
+  }
+}
+
+// hours + minutes in one field: [h]h:[m]min
+function durField(min,cb){
+  const h=el('input',{type:'number',min:'0',max:'24','aria-label':'Hours'}),m=el('input',{type:'number',min:'0',max:'59','aria-label':'Minutes'});
+  const box=el('div',{class:'dur'},h,'h:',m,'min');
+  const set=v=>{v=Math.round(v);h.value=Math.floor(v/60);m.value=v%60};set(min);
+  const val=()=>(parseInt(h.value)||0)*60+(parseInt(m.value)||0);
+  const fire=()=>{if(h.value===''&&m.value==='')return;const w=val();if(w>=5)cb(w)};
+  h.addEventListener('input',fire);m.addEventListener('input',fire);
+  box.addEventListener('focusout',e=>{if(!box.contains(e.relatedTarget))set(Math.max(5,val()))});
+  box.set=set;return box;
+}
+
+function renderEditor(){
+  sync();const c=S.chunks[S.sel],box=$('#editor');box.replaceChildren();if(!c)return;
+  const ni=el('input',{type:'text',value:c.name,placeholder:'Untitled',maxlength:'60','aria-label':'Name'});
+  ni.addEventListener('input',()=>{c.name=ni.value;save();renderCal()});
+  const sw=el('div',{class:'sw'});
+  sw.append(el('button',{style:'--c:var(--accent)','aria-label':'Accent color','aria-pressed':String(!c.color),onclick:()=>setColor(null)}));
+  PRESETS.forEach(col=>sw.append(el('button',{style:'--c:'+col,'aria-label':'Color '+col,'aria-pressed':String(!!c.color&&c.color.toLowerCase()===col.toLowerCase()),onclick:()=>setColor(col)})));
+  const ci=el('input',{type:'color',value:c.color||S.accent,'aria-label':'Custom color'});
+  ci.addEventListener('input',()=>setColor(ci.value,true));sw.append(ci);
+  const rs=el('button',{class:'btn alt',title:'Back to the even split',onclick:()=>{c.len=null;save();renderEditor();syncTimes();renderCal()}},'Auto');rs.hidden=!c.len;
+  const df=durField(c.len||S.L,w=>{c.len=w;save();rs.hidden=false;syncTimes();renderCal()});
+  const ti=el('input',{type:'text',placeholder:'Add a to-do','aria-label':'New to-do',maxlength:'120'});
+  const add=()=>{const v=ti.value.trim();if(!v)return;c.todos.push({t:v,d:false});ti.value='';save();renderTodos();renderCal()};
+  ti.addEventListener('keydown',e=>{if(e.key==='Enter')add()});
+  box.append(el('label',{},'Name',ni),el('label',{style:'margin-top:12px'},'Color'),sw,el('label',{},'Work time',el('div',{class:'row',style:'margin-top:4px'},df,rs)),el('label',{style:'margin-top:12px'},'To-do list'),el('div',{id:'todos'}),el('div',{class:'row'},ti,el('button',{class:'btn',onclick:add},'Add')));
+  renderTodos();
+}
+function setColor(col,keep){S.chunks[S.sel].color=col;save();renderCal();if(!keep)renderEditor()}
+function renderTodos(){
+  const c=S.chunks[S.sel],box=$('#todos');box.replaceChildren();
+  c.todos.forEach((t,i)=>{
+    const cb=el('input',{type:'checkbox','aria-label':'Done: '+t.t});cb.checked=t.d;
+    cb.addEventListener('change',()=>{t.d=cb.checked;save();renderTodos();renderCal()});
+    box.append(el('div',{class:'todo'+(t.d?' done':'')},cb,el('span',{},t.t),el('button',{class:'x','aria-label':'Delete to-do',onclick:()=>{c.todos.splice(i,1);save();renderTodos();renderCal()}},'×')));
+  });
+}
+function renderAll(){sync();renderCal();renderEditor()}
+
+// window inputs: start, work time and end stay in sync
+const wt=durField(0,w=>{solveL(w);save();syncTimes('work');renderCal()});
+$('#wt').append(wt);
+function syncTimes(skip){
+  const em=Math.round(toMin(S.start)+totalW());$('#nd').textContent=em>=1440?' (next day)':'';
+  if(skip!=='end')$('#end').value=hhmm(em);
+  if(skip!=='work')wt.set(totalW());
+}
+wt.addEventListener('focusout',()=>setTimeout(()=>{if(!wt.contains(document.activeElement))syncTimes()},0));
+$('#date').value=S.date;$('#start').value=S.start;
+$('#date').addEventListener('input',e=>{if(!e.target.value)return;S.date=e.target.value;renderCal()});
+$('#start').addEventListener('input',e=>{if(!e.target.value)return;S.start=e.target.value;syncTimes();renderCal()});
+$('#end').addEventListener('input',e=>{if(!e.target.value)return;const w0=toMin(e.target.value)-toMin(S.start),w=w0<=0?w0+1440:w0;if(w<5)return;solveL(w);save();syncTimes('end');renderCal()});
+$('#end').addEventListener('change',()=>syncTimes());
+const ni=$('#n'),bi=$('#brk');ni.value=S.n;bi.value=S.brk;
+ni.addEventListener('input',()=>{const v=parseInt(ni.value);if(!(v>=1))return;const W=totalW();S.n=Math.min(12,v);sync();solveL(W);save();renderAll();syncTimes()});
+bi.addEventListener('input',()=>{const v=parseInt(bi.value);if(!(v>=0))return;const W=totalW();S.brk=Math.min(120,v);solveL(W);save();renderAll();syncTimes()});
+ni.addEventListener('change',()=>{ni.value=S.n});bi.addEventListener('change',()=>{bi.value=S.brk});
+$('#ib').checked=S.ib;$('#ib').addEventListener('change',e=>{S.ib=e.target.checked;save()});
+
+// settings: theme + accent
+const closeP=()=>{$('#pset').hidden=true;$('#bset').setAttribute('aria-expanded','false')};
+$('#bset').addEventListener('click',e=>{e.stopPropagation();const o=$('#pset').hidden;closeP();if(o){$('#pset').hidden=false;e.currentTarget.setAttribute('aria-expanded','true')}});
+document.addEventListener('click',e=>{if(!e.target.closest('#pset'))closeP()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeP()});
+function applyTheme(){
+  const r=document.documentElement;
+  if(S.theme==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme);
+  r.style.setProperty('--accent',S.accent);
+  const x=parseInt(S.accent.slice(1),16),lum=(.299*(x>>16)+.587*((x>>8)&255)+.114*(x&255))/255;
+  r.style.setProperty('--accent-ink',lum>.6?'#000':'#fff');
+  const box=$('#themes');box.replaceChildren();
+  [['system','System'],['light','Light'],['dark','Dark']].forEach(([k,l])=>box.append(el('button',{class:'btn alt','aria-pressed':String(S.theme===k),onclick:()=>{S.theme=k;save();applyTheme()}},l)));
+  const ac=$('#accents');ac.replaceChildren();
+  ACCENTS.forEach(col=>ac.append(el('button',{style:'--c:'+col,'aria-label':'Accent '+col,'aria-pressed':String(S.accent.toLowerCase()===col),onclick:()=>{S.accent=col;save();applyTheme()}})));
+  const ci=el('input',{type:'color',value:S.accent,'aria-label':'Custom accent color'});
+  ci.addEventListener('change',()=>{S.accent=ci.value;save();applyTheme()});ac.append(ci);
+}
+
+// ics export
+const esc=s=>s.replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+const fold=l=>{const o=[];while(l.length>70){o.push(l.slice(0,70));l=' '+l.slice(70)}o.push(l);return o.join('\r\n')};
+function buildIcs(){
+  const L=layout(),stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z',base=new Date(S.date+'T00:00');
+  const T=m=>{const dd=new Date(base);dd.setDate(dd.getDate()+Math.floor(m/1440));const r=m%1440;return ymd(dd).replace(/-/g,'')+'T'+pad(Math.floor(r/60))+pad(r%60)+'00'};
+  const uid=()=>(window.crypto&&crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now())+'@timechunk';
+  const out=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Timechunk//EN','CALSCALE:GREGORIAN'];
+  L.items.forEach(it=>{
+    if(it.type==='break'&&!S.ib)return;
+    let name='Break',desc='';
+    if(it.type==='chunk'){const c=S.chunks[it.i];name=c.name||'Untitled';desc=c.todos.map(t=>(t.d?'[x] ':'[ ] ')+t.t).join('\n')}
+    out.push('BEGIN:VEVENT','UID:'+uid(),'DTSTAMP:'+stamp,'DTSTART:'+T(it.s),'DTEND:'+T(it.e),'SUMMARY:'+esc(name));
+    if(desc)out.push('DESCRIPTION:'+esc(desc));
+    out.push('END:VEVENT');
+  });
+  out.push('END:VCALENDAR');
+  return out.map(fold).join('\r\n')+'\r\n';
+}
+let tt;const toast=t=>{const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(tt);tt=setTimeout(()=>e.hidden=true,4500)};
+function fallback(text){$('#dmsg').textContent='Downloads aren’t available here. Copy this text into a file named timechunk.ics.';$('#fb').value=text;$('#dlg').showModal();$('#fb').select()}
+$('#dx').addEventListener('click',()=>$('#dlg').close());
+$('#bexp').addEventListener('click',async()=>{
+  if(layout().msg){toast('Fix the window settings first.');return}
+  const text=buildIcs();
+  let d=null;try{d=window.claude&&claude.use?await claude.use('downloads'):null}catch(e){}
+  if(!d){fallback(text);return}
+  try{await d.save({filename:'timechunk.ics',data:text});toast('Saved timechunk.ics')}
+  catch(e){
+    if(e&&e.code==='declined')return;
+    if(e&&e.code==='rejected_extension'){
+      try{await d.save({filename:'timechunk-ics.txt',data:text});toast('Saved as .txt because this viewer blocks .ics. Rename it to .ics before importing.')}
+      catch(e2){if(!e2||e2.code!=='declined')fallback(text)}
+    }else fallback(text);
+  }
+});
+applyTheme();sync();syncTimes();renderAll();
+setInterval(renderCal,60000);addEventListener('resize',renderCal);
+</script>
+</body>
+</html>
