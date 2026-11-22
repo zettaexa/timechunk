@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Timechunk</title>
 <style>
-:root{--font:-apple-system,"Segoe UI",Roboto,Verdana,sans-serif;--bg:#ECEFF3;--panel:#fff;--ink:#171C26;--mute:#5E6878;--line:#D8DDE5;--accent:#4F7CFF;--accent-ink:#fff;--hatch:#E3E7ED;--now:#E5384F;
+:root{--font:-apple-system,"Segoe UI",Roboto,Verdana,sans-serif;--bg:#ECEFF3;--panel:#fff;--canvas:#fff;--ink:#171C26;--mute:#5E6878;--line:#D8DDE5;--accent:#4F7CFF;--accent-ink:#fff;--hatch:#E3E7ED;--now:var(--accent);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--panel:#0B0B0C;--ink:#ECEEF2;--mute:#8F97A5;--line:#222428;--hatch:#17181B;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#000;--panel:#0B0B0C;--ink:#ECEEF2;--mute:#8F97A5;--line:#222428;--hatch:#17181B;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--canvas:#000;--panel:#0B0B0C;--ink:#ECEEF2;--mute:#8F97A5;--line:#222428;--hatch:#17181B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#000;--canvas:#000;--panel:#0B0B0C;--ink:#ECEEF2;--mute:#8F97A5;--line:#222428;--hatch:#17181B;color-scheme:dark}
 html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;height:100%;display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);background:var(--bg);color:var(--ink);font:15px/1.45 var(--font);overflow:hidden}
+body{margin:0;height:100%;display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);background:var(--canvas);color:var(--ink);font:15px/1.45 var(--font);overflow:hidden}
 button,input,textarea{font-family:inherit}
 .side{grid-column:1;grid-row:2;min-height:0;overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:18px 16px}
 .side section{padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
@@ -21,8 +21,8 @@ h2{font-size:15px;margin:0 0 12px;font-weight:600}
 .top{grid-column:1/-1;grid-row:1;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
 .top h1{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0}
 .top nav{display:flex;gap:8px}
-.main{grid-column:2;grid-row:2;min-height:0;overflow:auto;padding:18px 24px 40px}
-.pop{position:fixed;right:12px;top:calc(56px + env(safe-area-inset-top,0px));z-index:40;width:min(330px,calc(100vw - 24px));background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 10px 34px rgba(0,0,0,.35)}
+.main{grid-column:2;grid-row:2;min-height:0;overflow:auto;padding:0 24px 40px}
+.pop{position:fixed;right:12px;top:calc(56px + env(safe-area-inset-top,0px));z-index:40;max-height:calc(100vh - 80px);overflow:auto;width:min(330px,calc(100vw - 24px));background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 10px 34px rgba(0,0,0,.35)}
 .pop[hidden]{display:none}
 .pop h3{font-size:13px;font-weight:600;margin:14px 0 8px}.pop h3:first-of-type{margin-top:0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
@@ -52,13 +52,43 @@ input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline
 .btn[hidden]{display:none}
 .seg{display:flex;gap:6px}.seg .btn{flex:1}
 .muted{color:var(--mute);font-size:13px}
-.hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;gap:8px;flex-wrap:wrap}
+.hdr{position:sticky;top:0;z-index:10;background:var(--canvas);padding:18px 0 12px;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;gap:8px;flex-wrap:wrap}
 .hdr h2{margin:0;font-size:22px;font-weight:600}
 .cal{position:relative;margin-left:64px}
 .hr{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
 .hr b,.hf b{position:absolute;left:-64px;top:-9px;width:54px;text-align:right;font-weight:600;font-size:12px;color:var(--ink)}
 .hf{position:absolute;left:0;right:0;border-top:1px dashed var(--line);opacity:.6}
 .hf b{font-weight:400;color:var(--mute);font-size:11px}
+.zoom{position:fixed;right:24px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:4px 6px;box-shadow:0 6px 24px rgba(0,0,0,.2)}.zoom .btn{padding:2px 11px;font-size:17px;line-height:1.2}.zoom span{min-width:46px;text-align:center;font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums;cursor:pointer}
+.ic{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer;padding:0;flex:none}
+.ic[hidden]{display:none}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.sh h2{margin:0}
+.tl{display:flex;align-items:center;gap:10px}
+body.col{grid-template-columns:minmax(0,1fr)}body.col .side{display:none}body.col .main{grid-column:1}
+#tmrsec.mini{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 12px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#tmrsec.mini h2{display:none}
+#tmrsec.mini .tdisp{font-size:20px;margin:0}
+#tmrsec.mini #tn{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tmrsec.mini .row{margin:0}
+#tmrsec.mini .btn{padding:4px 10px;font-size:13px}
+.sh .btn{padding:4px 10px;font-size:13px}
+.seg.sm .btn{padding:7px 4px;font-size:13px}
+.dtag{margin-left:6px;font-size:11px;font-weight:600;color:var(--accent)}
+.muted:empty{display:none}
+.shr{display:flex;align-items:center;gap:6px}
+#ppop{right:auto;width:300px;min-height:350px}
+#ppop .sh{margin-bottom:4px}
+.prow{position:relative;display:flex;align-items:center;gap:6px;margin-top:8px}
+.prow input[type=text]{margin:0}
+.pmain{flex:1;min-width:0;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);padding:7px 10px;cursor:pointer;font:inherit}
+.pmain strong{display:block;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmain small{display:block;color:var(--mute);font-size:12px}
+.pmenu{position:absolute;right:0;top:calc(100% + 4px);z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.3);min-width:150px}
+.pmenu button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--ink);font:inherit;padding:7px 10px;border-radius:6px;cursor:pointer}
+.pmenu button:hover{background:var(--bg)}
+.pmenu .del{color:#E5384F}
+.tdisp{font-size:34px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:2px 0 4px}
+.pop input[type=file]{width:100%;margin-top:4px;font-size:12px;color:var(--ink)}
 .hr.day{border-top:2px solid var(--mute)}.dayl{position:absolute;left:8px;top:4px;font-size:11px;color:var(--mute)}
 .tk{position:absolute;left:-7px;width:7px;border-top:1px solid var(--mute);opacity:.7}
 .now{position:absolute;left:-6px;right:0;border-top:2px solid var(--now);z-index:5;pointer-events:none}
@@ -74,13 +104,13 @@ input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline
 #toast[hidden]{display:none}
 dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);width:min(440px,92vw)}
 dialog textarea{width:100%;height:150px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:12px/1.4 ui-monospace,monospace;padding:8px}
-@media(max-width:820px){body{height:auto;overflow:auto;grid-template-columns:1fr;grid-template-rows:auto auto auto}.top{grid-column:1;position:sticky;top:env(safe-area-inset-top,0px);z-index:30}.main{grid-column:1;grid-row:2;overflow:visible;padding:16px 12px 24px}.side{grid-column:1;grid-row:3;border-right:0;border-top:1px solid var(--line)}}
+@media(max-width:820px){body{height:auto;overflow:auto;grid-template-columns:1fr;grid-template-rows:auto auto auto}.top{grid-column:1;position:sticky;top:env(safe-area-inset-top,0px);z-index:30}.main{grid-column:1;grid-row:2;overflow:visible;padding:0 12px 24px}.hdr{top:calc(env(safe-area-inset-top,0px) + 56px)}.side{grid-column:1;grid-row:3;border-right:0;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
 <aside class="side">
 <section>
-<h2>My window</h2>
+<div class="sh"><h2>My window</h2><div class="shr"><button class="btn alt" id="bpre" aria-expanded="false">Presets</button><button class="ic" id="col" aria-label="Collapse sidebar" title="Collapse sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button></div></div>
 <label>Date<input type="date" id="date"></label>
 <div class="grid2">
 <label>Start<input type="time" id="start"></label>
@@ -88,43 +118,62 @@ dialog textarea{width:100%;height:150px;border:1px solid var(--line);border-radi
 </div>
 <label style="margin-top:10px">Work time<div id="wt" style="display:flex"></div></label>
 <div class="grid2">
-<label>Chunks<input type="number" id="n" min="1" max="12"></label>
+<label>Chunks<input type="number" id="n" min="0" max="12"></label>
 <label>Break (min)<input type="number" id="brk" min="0" max="120"></label>
 </div>
 <div class="warn" id="warn" hidden></div>
 </section>
 <section>
 <h2>Chunks</h2>
-<p class="muted" style="margin:0 0 12px">Select a block in the preview to edit it.</p>
+<p class="muted" id="chint" style="margin:0 0 12px">Select a block in the preview to edit it.</p>
 <div id="editor"></div>
+</section>
+<section id="tmrsec">
+<h2>Timer</h2>
+<div class="muted" id="tn"></div>
+<div class="tdisp" id="td"></div>
 </section>
 </aside>
 <div class="right">
 <header class="top">
-<h1>Timechunk</h1>
+<div class="tl"><button class="ic" id="exp2" aria-label="Show sidebar" title="Show sidebar" hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button><h1>Timechunk</h1></div>
 <nav>
-<button class="btn" id="bexp">Export</button>
 <button class="btn alt" id="bset" aria-expanded="false">Settings</button>
 </nav>
 </header>
 <div class="pop" id="pset" hidden>
 <h2>Settings</h2>
-<h3>Theme</h3>
+<div class="row" style="margin:0 0 4px"><button class="btn alt" id="bimp" style="flex:1">Import</button><button class="btn" id="bexp" style="flex:1">Export</button></div>
+<input type="file" id="impf" accept=".ics,.ical,text/calendar" hidden>
+<label style="display:flex;gap:8px;align-items:center;color:var(--ink);margin-top:10px"><input type="checkbox" id="ib"> Include breaks as events</label>
+<h3 style="margin-top:16px">Theme</h3>
 <div class="seg" id="themes"></div>
 <label style="margin-top:12px">Accent color</label>
 <div class="sw" id="accents"></div>
-<h3>Export</h3>
-<label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="ib"> Include breaks as events</label>
+<label style="margin-top:4px">Font<input type="text" id="fontin" placeholder="Font name or URL" autocomplete="off" spellcheck="false"></label>
+<h3>On startup</h3>
+<div class="seg sm" id="startm"></div>
+<p class="muted" id="startnote" style="margin:6px 0 0"></p>
+<h3>Timer</h3>
+<label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="secs"> Show seconds</label>
+<label style="margin:14px 0 6px">Bell sound</label>
+<div class="seg" id="sndm"></div>
+<div id="sndc" style="margin-top:10px"></div>
+</div>
+<div class="pop" id="ppop" hidden>
+<div class="sh"><h2>Presets</h2><button class="btn alt" id="psave">Save current</button></div>
+<div id="plist"></div>
 </div>
 <main class="main">
 <div class="hdr"><h2 id="dlabel">Day preview</h2><span class="muted" id="sum"></span></div>
 <div class="cal" id="cal"></div>
 </main>
+<div class="zoom"><button class="btn alt" id="zo" aria-label="Zoom out">−</button><span id="zl" title="Click to reset zoom">100%</span><button class="btn alt" id="zi" aria-label="Zoom in">+</button></div>
 </div>
 <div id="toast" hidden></div>
 <dialog id="dlg"><p class="muted" id="dmsg" style="margin-top:0"></p><textarea id="fb" readonly></textarea><div class="row" style="justify-content:flex-end"><button class="btn" id="dx">Close</button></div></dialog>
 <script>
-(()=>{const u=navigator.userAgent;const f=/Android/i.test(u)?'Roboto':/iPhone|iPad|iPod|Macintosh|Mac OS/i.test(u)?'-apple-system,BlinkMacSystemFont,"SF Pro Text"':/Windows/i.test(u)?'"Segoe UI"':'Verdana';document.documentElement.style.setProperty('--font',f+',"Segoe UI",Roboto,Verdana,sans-serif')})();
+(()=>{const u=navigator.userAgent;const f=/Android/i.test(u)?'Roboto':/iPhone|iPad|iPod|Macintosh|Mac OS/i.test(u)?'-apple-system,BlinkMacSystemFont,"SF Pro Text"':/Windows/i.test(u)?'"Segoe UI"':'Verdana';window.TCFONT=f+',"Segoe UI",Roboto,Verdana,sans-serif';document.documentElement.style.setProperty('--font',window.TCFONT)})();
 const PRESETS=['#E5586E','#F2994A','#E0B400','#27AE87','#2D9CDB','#9B6BDF','#8A6D4B'];
 const ACCENTS=['#4F7CFF','#27AE87','#E5586E','#F2994A','#9B6BDF','#E0B400'];
 const $=s=>document.querySelector(s);
@@ -133,10 +182,12 @@ function el(t,a={},...c){const e=document.createElement(t);for(const k in a){if(
 const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 // start = now, rounded up to the next 5 minutes (20:36 -> 20:40, 9:01 -> 9:05)
 const nxt=new Date(Math.floor(Date.now()/300000)*300000+300000);
-let S={date:ymd(nxt),start:pad(nxt.getHours())+':'+pad(nxt.getMinutes()),n:4,brk:10,L:52.5,ib:false,sel:0,theme:'system',accent:'#4F7CFF',chunks:[]};
-try{const r=JSON.parse(localStorage.getItem('timechunk3'));if(r&&r.chunks)Object.assign(S,{n:r.n||S.n,brk:r.brk??S.brk,L:r.L||S.L,ib:!!r.ib,theme:r.theme||'system',accent:r.accent||S.accent,chunks:r.chunks})}catch(e){}
-const save=()=>{try{localStorage.setItem('timechunk3',JSON.stringify({n:S.n,brk:S.brk,L:S.L,ib:S.ib,theme:S.theme,accent:S.accent,chunks:S.chunks}))}catch(e){}};
-function sync(){while(S.chunks.length<S.n)S.chunks.push({name:'',color:null,len:null,todos:[]});if(S.sel>=S.n)S.sel=S.n-1}
+let S={date:ymd(nxt),start:pad(nxt.getHours())+':'+pad(nxt.getMinutes()),n:0,pendW:0,brk:10,L:50,ib:false,sel:0,theme:'system',accent:'#4F7CFF',zoom:1,col:false,font:'',startMode:'blank',defId:null,secs:true,snd:'default',sndSrc:'url',sndUrl:'',chunks:[]};
+// only preferences are remembered; chunks and the window reset on refresh
+try{const r=JSON.parse(localStorage.getItem('timechunk4'));if(r)Object.assign(S,{ib:!!r.ib,theme:r.theme||'system',accent:r.accent||S.accent,secs:r.secs!==false,snd:r.snd||'default',sndSrc:r.sndSrc||'url',sndUrl:r.sndUrl||'',font:r.font||'',startMode:r.startMode||'blank',defId:r.defId||null})}catch(e){}
+function saveSession(){if(S.startMode!=='resume')return;try{localStorage.setItem('timechunk4session',JSON.stringify({date:S.date,start:S.start,n:S.n,pendW:S.pendW,brk:S.brk,L:S.L,chunks:S.chunks}))}catch(e){}}
+const save=()=>{try{localStorage.setItem('timechunk4',JSON.stringify({ib:S.ib,theme:S.theme,accent:S.accent,secs:S.secs,snd:S.snd,sndSrc:S.sndSrc,sndUrl:S.sndUrl,font:S.font,startMode:S.startMode,defId:S.defId}))}catch(e){}saveSession()};
+function sync(){while(S.chunks.length<S.n)S.chunks.push({name:'',color:null,len:null,todos:[]});if(S.sel>=S.n)S.sel=Math.max(0,S.n-1)}
 const toMin=v=>{const[a,b]=(v||'0:0').split(':').map(Number);return a*60+b};
 const hhmm=m=>pad(Math.floor(m/60)%24)+':'+pad(m%60);
 const fmt=m=>{const h=Math.floor(m/60)%24,mm=m%60;return(h%12||12)+(mm?':'+pad(mm):'')+(h<12?' AM':' PM')};
@@ -145,30 +196,34 @@ const dur=m=>{const r=Math.round(m);return r>=60?Math.floor(r/60)+' h'+(r%60?' '
 
 // chunk lengths: a chunk with its own work time keeps it, the rest use the even split (S.L)
 const lens=()=>{sync();const a=[];for(let i=0;i<S.n;i++)a.push(S.chunks[i].len||S.L);return a};
-const totalW=()=>lens().reduce((x,y)=>x+y,0)+Math.max(0,S.n-1)*S.brk;
-function solveL(W){let f=0,a=0;for(let i=0;i<S.n;i++){const c=S.chunks[i];if(c.len)f+=c.len;else a++}if(a)S.L=(W-Math.max(0,S.n-1)*S.brk-f)/a}
+const gap=i=>i<S.n-1?(S.chunks[i].gap??S.brk):0;
+const gapSum=()=>Array.from({length:S.n},(_,i)=>gap(i)).reduce((x,y)=>x+y,0);
+const totalW=()=>S.n?lens().reduce((x,y)=>x+y,0)+gapSum():(S.pendW||0);
+function solveL(W){if(S.n===0){S.pendW=W;return}let f=0,a=0;for(let i=0;i<S.n;i++){const c=S.chunks[i];if(c.len)f+=c.len;else a++}if(a)S.L=(W-gapSum()-f)/a}
 function layout(){
-  const L=lens(),s=toMin(S.start),b=S.brk;
-  if(L.some(x=>x<5))return{items:[],msg:'Each chunk needs at least 5 minutes. Use fewer chunks, shorter breaks or more work time.'};
+  const L=lens(),s=toMin(S.start);
+  if(L.some(x=>x<1))return{items:[],msg:'There isn’t enough time for every chunk. Use fewer chunks, shorter breaks or more work time.'};
   const items=[];let cur=s;
   L.forEach((len,i)=>{
+    const b=gap(i);
     items.push({type:'chunk',i,s:Math.round(cur),e:Math.round(cur+len)});cur+=len;
-    if(i<L.length-1&&b>0){items.push({type:'break',s:Math.round(cur),e:Math.round(cur+b)})}
+    if(b>0){items.push({type:'break',s:Math.round(cur),e:Math.round(cur+b)})}
     cur+=b;
   });
-  if(Math.round(cur-b-s)>1440)return{items:[],msg:'A window can be at most 24 hours.'};
+  if(Math.round(cur-s)>1440)return{items:[],msg:'A window can be at most 24 hours.'};
   return{items,msg:''};
 }
 
 function renderCal(){
+  updateTimer();
   const L=layout(),cal=$('#cal');cal.replaceChildren();
   $('#warn').hidden=!L.msg;$('#warn').textContent=L.msg;
-  $('#sum').textContent=L.msg?'':dur(totalW())+' total · '+S.n+' chunks · '+S.brk+' min breaks';
+  $('#sum').textContent=L.msg||!S.n?'':dur(totalW())+' total · '+S.n+' chunks · '+S.brk+' min breaks';
   const dl=new Date(S.date+'T00:00');$('#dlabel').textContent=isNaN(dl)?'Day preview':dl.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
   const s=toMin(S.start),e=Math.round(s+totalW());
   const gs=Math.max(0,Math.floor(s/60)*60-60),ge0=Math.ceil(Math.max(e,s+60)/60)*60+60;
   // the measure fills the window exactly and is cut off at the bottom; it only scrolls when the schedule itself is taller
-  const ppm=84/60,mh=matchMedia('(max-width:820px)').matches?innerHeight*.8:$('.main').clientHeight,availPx=mh-$('.hdr').offsetHeight-74,H=Math.max((ge0-gs)*ppm,availPx),ge=gs+Math.floor(H/ppm/15)*15;
+  const ppm=84/60*S.zoom,mh=matchMedia('(max-width:820px)').matches?innerHeight*.8:$('.main').clientHeight,availPx=mh-$('.hdr').offsetHeight-56,H=Math.max((ge0-gs)*ppm,availPx),ge=gs+Math.floor(H/ppm/15)*15;
   cal.style.height=H+'px';
   for(let m=gs;m<=ge;m+=15){
     const y=(m-gs)*ppm;
@@ -196,14 +251,14 @@ function durField(min,cb){
   const box=el('div',{class:'dur'},h,'h:',m,'min');
   const set=v=>{v=Math.round(v);h.value=Math.floor(v/60);m.value=v%60};set(min);
   const val=()=>(parseInt(h.value)||0)*60+(parseInt(m.value)||0);
-  const fire=()=>{if(h.value===''&&m.value==='')return;const w=val();if(w>=5)cb(w)};
+  const fire=()=>{if(h.value===''&&m.value==='')return;const w=val();if(w>=1)cb(w)};
   h.addEventListener('input',fire);m.addEventListener('input',fire);
-  box.addEventListener('focusout',e=>{if(!box.contains(e.relatedTarget))set(Math.max(5,val()))});
+  box.addEventListener('focusout',e=>{if(!box.contains(e.relatedTarget))set(Math.max(1,val()))});
   box.set=set;return box;
 }
 
 function renderEditor(){
-  sync();const c=S.chunks[S.sel],box=$('#editor');box.replaceChildren();if(!c)return;
+  sync();const c=S.sel<S.n?S.chunks[S.sel]:null,box=$('#editor');box.replaceChildren();$('#chint').textContent=S.n?'Select a block in the preview to edit it.':'Set the number of chunks to begin.';if(!c)return;
   const ni=el('input',{type:'text',value:c.name,placeholder:'Untitled',maxlength:'60','aria-label':'Name'});
   ni.addEventListener('input',()=>{c.name=ni.value;save();renderCal()});
   const sw=el('div',{class:'sw'});
@@ -228,7 +283,7 @@ function renderTodos(){
     box.append(el('div',{class:'todo'+(t.d?' done':'')},cb,el('span',{},t.t),el('button',{class:'x','aria-label':'Delete to-do',onclick:()=>{c.todos.splice(i,1);save();renderTodos();renderCal()}},'×')));
   });
 }
-function renderAll(){sync();renderCal();renderEditor()}
+function renderAll(){sync();renderCal();renderEditor();saveSession()}
 
 // window inputs: start, work time and end stay in sync
 const wt=durField(0,w=>{solveL(w);save();syncTimes('work');renderCal()});
@@ -240,13 +295,13 @@ function syncTimes(skip){
 }
 wt.addEventListener('focusout',()=>setTimeout(()=>{if(!wt.contains(document.activeElement))syncTimes()},0));
 $('#date').value=S.date;$('#start').value=S.start;
-$('#date').addEventListener('input',e=>{if(!e.target.value)return;S.date=e.target.value;renderCal()});
-$('#start').addEventListener('input',e=>{if(!e.target.value)return;S.start=e.target.value;syncTimes();renderCal()});
-$('#end').addEventListener('input',e=>{if(!e.target.value)return;const w0=toMin(e.target.value)-toMin(S.start),w=w0<=0?w0+1440:w0;if(w<5)return;solveL(w);save();syncTimes('end');renderCal()});
+$('#date').addEventListener('input',e=>{if(!e.target.value)return;S.date=e.target.value;save();renderCal()});
+$('#start').addEventListener('input',e=>{if(!e.target.value)return;S.start=e.target.value;save();syncTimes();renderCal()});
+$('#end').addEventListener('input',e=>{if(!e.target.value)return;const w0=toMin(e.target.value)-toMin(S.start),w=w0<=0?w0+1440:w0;if(w<1)return;solveL(w);save();syncTimes('end');renderCal()});
 $('#end').addEventListener('change',()=>syncTimes());
 const ni=$('#n'),bi=$('#brk');ni.value=S.n;bi.value=S.brk;
-ni.addEventListener('input',()=>{const v=parseInt(ni.value);if(!(v>=1))return;const W=totalW();S.n=Math.min(12,v);sync();solveL(W);save();renderAll();syncTimes()});
-bi.addEventListener('input',()=>{const v=parseInt(bi.value);if(!(v>=0))return;const W=totalW();S.brk=Math.min(120,v);solveL(W);save();renderAll();syncTimes()});
+ni.addEventListener('input',()=>{const v=parseInt(ni.value);if(!(v>=0))return;const W=totalW();S.n=Math.min(12,v);sync();if(W>0)solveL(W);if(S.n>0)S.pendW=0;save();renderAll();syncTimes()});
+bi.addEventListener('input',()=>{const v=parseInt(bi.value);if(!(v>=0))return;const W=totalW();S.brk=Math.min(120,v);S.chunks.forEach(c=>c.gap=null);solveL(W);save();renderAll();syncTimes()});
 ni.addEventListener('change',()=>{ni.value=S.n});bi.addEventListener('change',()=>{bi.value=S.brk});
 $('#ib').checked=S.ib;$('#ib').addEventListener('change',e=>{S.ib=e.target.checked;save()});
 
@@ -259,6 +314,7 @@ function applyTheme(){
   const r=document.documentElement;
   if(S.theme==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme);
   r.style.setProperty('--accent',S.accent);
+  r.style.colorScheme=S.theme==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):S.theme;
   const x=parseInt(S.accent.slice(1),16),lum=(.299*(x>>16)+.587*((x>>8)&255)+.114*(x&255))/255;
   r.style.setProperty('--accent-ink',lum>.6?'#000':'#fff');
   const box=$('#themes');box.replaceChildren();
@@ -290,12 +346,18 @@ function buildIcs(){
 }
 let tt;const toast=t=>{const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(tt);tt=setTimeout(()=>e.hidden=true,4500)};
 function fallback(text){$('#dmsg').textContent='Downloads aren’t available here. Copy this text into a file named timechunk.ics.';$('#fb').value=text;$('#dlg').showModal();$('#fb').select()}
+// standard browser download, used when the page runs outside Claude (a local file, GitHub Pages, etc.)
+function blobDownload(text){
+  const u=URL.createObjectURL(new Blob([text],{type:'text/calendar;charset=utf-8'})),a=document.createElement('a');
+  a.href=u;a.download='timechunk.ics';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
+}
 $('#dx').addEventListener('click',()=>$('#dlg').close());
 $('#bexp').addEventListener('click',async()=>{
+  if(!S.n){toast('Add some chunks first.');return}
   if(layout().msg){toast('Fix the window settings first.');return}
   const text=buildIcs();
   let d=null;try{d=window.claude&&claude.use?await claude.use('downloads'):null}catch(e){}
-  if(!d){fallback(text);return}
+  if(!d){try{blobDownload(text);toast('Saved timechunk.ics');return}catch(e){fallback(text);return}}
   try{await d.save({filename:'timechunk.ics',data:text});toast('Saved timechunk.ics')}
   catch(e){
     if(e&&e.code==='declined')return;
@@ -305,7 +367,225 @@ $('#bexp').addEventListener('click',async()=>{
     }else fallback(text);
   }
 });
-applyTheme();sync();syncTimes();renderAll();
+// ---- import (.ics) ----
+function parseIcs(txt){
+  const lines=txt.replace(/\r?\n[ \t]/g,'').split(/\r?\n/),evs=[];let cur=null;
+  const unesc=s=>s.replace(/\\n/gi,'\n').replace(/\\([,;\\])/g,'$1');
+  const pd=v=>{const m=v.match(/^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)?Z?$/);if(!m)return null;const a=m.slice(1,7).map(x=>+x||0);return v.endsWith('Z')?new Date(Date.UTC(a[0],a[1]-1,a[2],a[3],a[4],a[5])):new Date(a[0],a[1]-1,a[2],a[3],a[4],a[5])};
+  for(const ln of lines){
+    if(ln==='BEGIN:VEVENT'){cur={};continue}
+    if(ln==='END:VEVENT'){if(cur)evs.push(cur);cur=null;continue}
+    if(!cur)continue;
+    const i=ln.indexOf(':');if(i<0)continue;
+    const K=ln.slice(0,i).split(';')[0].toUpperCase(),val=ln.slice(i+1);
+    if(K==='DTSTART')cur.s=pd(val);else if(K==='DTEND')cur.e=pd(val);
+    else if(K==='DURATION'){const m=val.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);if(m)cur.d=(+m[1]||0)*60+(+m[2]||0)}
+    else if(K==='SUMMARY')cur.n=unesc(val);else if(K==='DESCRIPTION')cur.t=unesc(val);
+  }
+  return evs.filter(e=>e.s).map(e=>({n:e.n||'',s:e.s,e:e.e||new Date(e.s.getTime()+(e.d||30)*60000),t:e.t||''})).filter(e=>e.e>e.s).sort((a,b)=>a.s-b.s);
+}
+function applyImport(evs){
+  evs=evs.filter(e=>e.n.trim().toLowerCase()!=='break');
+  if(!evs.length){toast('No timed events found in that file.');return}
+  const cut=evs.length>12;if(cut)evs=evs.slice(0,12);
+  const f=evs[0].s;S.date=ymd(f);S.start=pad(f.getHours())+':'+pad(f.getMinutes());
+  S.n=evs.length;S.sel=0;
+  S.chunks=evs.map((e,i)=>{const nx=evs[i+1];return{name:e.n,color:null,len:Math.max(1,Math.round((e.e-e.s)/60000)),gap:nx?Math.max(0,Math.round((nx.s-e.e)/60000)):null,
+    todos:e.t.split('\n').map(l=>l.match(/^\[( |x|X)\] (.+)/)).filter(Boolean).map(m=>({t:m[2],d:m[1]!==' '}))}});
+  S.brk=evs.length>1?S.chunks[0].gap:10;
+  $('#date').value=S.date;$('#start').value=S.start;$('#n').value=S.n;$('#brk').value=S.brk;
+  renderAll();syncTimes();
+  toast('Imported '+evs.length+' chunk'+(evs.length>1?'s':'')+(cut?' (first 12 only)':''));
+}
+$('#bimp').addEventListener('click',()=>$('#impf').click());
+$('#impf').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{applyImport(parseIcs(await f.text()))}catch(x){toast('Couldn’t read that calendar file.')}
+});
+
+// ---- timer + bell ----
+let ac=null,sndBuf=null,sndName='';
+const ctx=()=>{if(!ac){const C=window.AudioContext||window.webkitAudioContext;if(C)ac=new C()}return ac};
+function strike(c,t){[[1,.45],[2.01,.22],[2.76,.16],[5.4,.08]].forEach(([r,g])=>{const o=c.createOscillator(),n=c.createGain();o.frequency.value=660*r;n.gain.setValueAtTime(0,t);n.gain.linearRampToValueAtTime(g,t+.01);n.gain.exponentialRampToValueAtTime(.0001,t+2.4/Math.sqrt(r));o.connect(n);n.connect(c.destination);o.start(t);o.stop(t+2.5)})}
+function bell(){
+  if(S.snd==='off')return;
+  const c=ctx();if(c&&c.state==='suspended')c.resume();
+  if(S.snd==='custom'){
+    if(S.sndSrc==='file'&&sndBuf&&c){const s=c.createBufferSource();s.buffer=sndBuf;s.connect(c.destination);s.start();return}
+    if(S.sndSrc==='url'&&S.sndUrl){new Audio(S.sndUrl).play().catch(()=>toast('Couldn’t play that sound URL. It may be blocked in this viewer, so try uploading a file instead.'));return}
+  }
+  if(!c)return;const t=c.currentTime+.02;strike(c,t);strike(c,t+1.1);
+}
+function b64(buf){let s='';const u=new Uint8Array(buf);for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(s)}
+async function loadFile(f){
+  if(!f)return;
+  try{
+    const buf=await f.arrayBuffer();
+    sndBuf=await ctx().decodeAudioData(buf.slice(0));sndName=f.name;S.sndSrc='file';save();
+    try{localStorage.setItem('timechunk4snd',JSON.stringify({name:f.name,b64:b64(buf)}))}catch(e){toast('That file is too large to remember after a refresh, but it works for now.')}
+    buildSnd();
+  }catch(e){toast('Couldn’t read that audio file.')}
+}
+(async()=>{try{const r=JSON.parse(localStorage.getItem('timechunk4snd'));if(r&&S.sndSrc==='file'){const bin=atob(r.b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);sndBuf=await ctx().decodeAudioData(u.buffer);sndName=r.name;buildSnd()}}catch(e){}})();
+function buildSnd(){
+  const m=$('#sndm');m.replaceChildren();
+  [['default','Default'],['custom','Custom'],['off','None']].forEach(([k,l])=>m.append(el('button',{class:'btn alt','aria-pressed':String(S.snd===k),onclick:()=>{S.snd=k;save();buildSnd();if(k==='default')bell()}},l)));
+  const c=$('#sndc');c.replaceChildren();if(S.snd!=='custom')return;
+  const f=el('input',{type:'file',accept:'audio/*','aria-label':'Audio file'});f.addEventListener('change',()=>loadFile(f.files[0]));
+  const u=el('input',{type:'text',placeholder:'https://example.com/bell.mp3',value:S.sndUrl,'aria-label':'Sound URL'});
+  u.addEventListener('change',()=>{S.sndUrl=u.value.trim();if(S.sndUrl)S.sndSrc='url';save();buildSnd()});
+  const using=S.sndSrc==='file'&&sndBuf?'Using file: '+sndName:(S.sndSrc==='url'&&S.sndUrl?'Using the URL above':'Nothing chosen yet, so the default bell will play');
+  c.append(el('label',{},'Audio file',f),el('label',{style:'margin-top:8px'},'or a URL',u),el('p',{class:'muted',style:'margin:8px 0'},using),el('button',{class:'btn alt',onclick:bell},'Test sound'));
+}
+let T={idx:null,endAt:0};
+function fmtT(s){
+  if(!S.secs)return dur(Math.ceil(s/60));
+  s=Math.ceil(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
+  return h?h+':'+pad(m)+':'+pad(x):pad(m)+':'+pad(x);
+}
+function updateTimer(){
+  const c=T.idx===null?null:S.chunks[T.idx];
+  $('#tn').textContent=c?(c.name||'Untitled'):'No chunk in session';
+  $('#td').textContent=c?fmtT((T.endAt-Date.now())/1000):(S.secs?'--:--':'--');
+}
+// The timer follows the clock: it only runs while a chunk is in session, and rings the bell when a chunk starts or ends.
+let lastSig='',prevIdx=null;
+function tickTimer(){
+  const L=layout();
+  if(L.msg){T.idx=null;lastSig='';prevIdx=null;updateTimer();return}
+  const b=new Date(S.date+'T00:00'),now=Date.now(),at=m=>new Date(b.getFullYear(),b.getMonth(),b.getDate(),0,m).getTime();
+  let cur=null,end=0;
+  L.items.forEach(it=>{if(it.type==='chunk'){const s=at(it.s),e=at(it.e);if(now>=s&&now<e){cur=it.i;end=e}}});
+  const sig=S.date+'|'+L.items.map(i=>i.s+'-'+i.e).join(',');
+  if(sig!==lastSig){lastSig=sig;prevIdx=cur}
+  else if(cur!==prevIdx){
+    const c=S.chunks[cur===null?prevIdx:cur],nm=(c&&c.name)||'Untitled';
+    toast(cur!==null?nm+' started':nm+' is done');bell();prevIdx=cur;
+  }
+  T.idx=cur;T.endAt=end;updateTimer();
+}
+setInterval(tickTimer,250);
+$('#secs').checked=S.secs;$('#secs').addEventListener('change',e=>{S.secs=e.target.checked;save();updateTimer()});
+$('#bexp').addEventListener('click',closeP);$('#bimp').addEventListener('click',closeP);
+addEventListener('pointerdown',()=>{const c=ctx();if(c&&c.state==='suspended')c.resume()},{once:true});
+// ---- presets ----
+const DOTS='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+let P=[];try{P=JSON.parse(localStorage.getItem('timechunk4presets'))||[]}catch(e){}
+const saveP=()=>{try{localStorage.setItem('timechunk4presets',JSON.stringify(P))}catch(e){}};
+let pMenu=null,pEdit=null;
+function renderPresets(){
+  const box=$('#plist');box.replaceChildren();
+  P.forEach(p=>{
+    const row=el('div',{class:'prow'});
+    if(pEdit===p.id){
+      const i=el('input',{type:'text',value:p.name,maxlength:'40','aria-label':'Preset name'});let fin=false;
+      const done=()=>{if(fin)return;fin=true;p.name=i.value.trim()||p.name;pEdit=null;saveP();renderPresets()};
+      i.addEventListener('keydown',e=>{if(e.key==='Enter')done();if(e.key==='Escape'){fin=true;pEdit=null;renderPresets()}});
+      i.addEventListener('blur',done);
+      row.append(i);requestAnimationFrame(()=>{i.focus();i.select()});
+    }else{
+      row.append(el('button',{class:'pmain',onclick:()=>applyPreset(p)},el('strong',{},p.name,p.id===S.defId?el('span',{class:'dtag'},'Default'):''),el('small',{},p.n+' chunk'+(p.n===1?'':'s')+' · '+dur(p.W))));
+    }
+    const mb=el('button',{class:'ic','aria-label':'Preset options',onclick:e=>{e.stopPropagation();pMenu=pMenu===p.id?null:p.id;renderPresets()}});mb.innerHTML=DOTS;
+    row.append(mb);
+    if(pMenu===p.id)row.append(el('div',{class:'pmenu'},
+      el('button',{onclick:e=>{e.stopPropagation();pMenu=null;pEdit=p.id;renderPresets()}},'Rename'),
+      el('button',{onclick:e=>{e.stopPropagation();S.defId=S.defId===p.id?null:p.id;pMenu=null;save();renderPresets();buildStart()}},S.defId===p.id?'Remove default':'Set as default'),
+      el('button',{class:'del',onclick:e=>{e.stopPropagation();P=P.filter(x=>x.id!==p.id);if(S.defId===p.id){S.defId=null;save();buildStart()}pMenu=null;saveP();renderPresets()}},'Delete')));
+    box.append(row);
+  });
+}
+document.addEventListener('click',e=>{if(pMenu&&!e.target.closest('.pmenu')){pMenu=null;renderPresets()}});
+$('#psave').addEventListener('click',()=>{
+  sync();if(!S.n){toast('Add some chunks first.');return}
+  const id=Date.now().toString(36);
+  P.unshift({id,name:'Preset '+(P.length+1),n:S.n,brk:S.brk,L:S.L,W:Math.round(totalW()),
+    chunks:S.chunks.slice(0,S.n).map(c=>({name:c.name,color:c.color,len:c.len,gap:c.gap??null,todos:c.todos.map(t=>({t:t.t,d:false}))}))});
+  pEdit=id;saveP();renderPresets();
+});
+function applyPreset(p){
+  S.n=p.n;S.brk=p.brk;S.L=p.L;S.pendW=0;S.sel=0;
+  S.chunks=p.chunks.map(c=>({name:c.name,color:c.color,len:c.len,gap:c.gap,todos:c.todos.map(t=>({t:t.t,d:false}))}));
+  $('#n').value=S.n;$('#brk').value=S.brk;
+  closePre();renderAll();syncTimes();toast('Loaded '+p.name);
+}
+const closePre=()=>{$('#ppop').hidden=true;$('#bpre').setAttribute('aria-expanded','false');pMenu=null};
+$('#bpre').addEventListener('click',e=>{
+  e.stopPropagation();const open=$('#ppop').hidden;closeP();closePre();
+  if(open){
+    const r=e.currentTarget.getBoundingClientRect(),pp=$('#ppop');
+    pp.hidden=false;pp.style.left=Math.max(12,Math.min(r.left,innerWidth-312))+'px';pp.style.top=(r.bottom+6)+'px';pp.style.maxHeight='calc(100vh - '+(r.bottom+18)+'px)';
+    e.currentTarget.setAttribute('aria-expanded','true');renderPresets();
+  }
+});
+$('#bset').addEventListener('click',closePre);
+document.addEventListener('click',e=>{const q=e.composedPath();if(!q.includes($('#ppop'))&&!q.includes($('#bpre')))closePre()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePre()});
+renderPresets();
+// ---- startup mode, default preset, custom font ----
+function loadPresetData(p){
+  S.n=p.n;S.brk=p.brk;S.L=p.L;S.pendW=0;S.sel=0;
+  S.chunks=p.chunks.map(c=>({name:c.name,color:c.color,len:c.len,gap:c.gap,todos:c.todos.map(t=>({t:t.t,d:false}))}));
+}
+function buildStart(){
+  const m=$('#startm');m.replaceChildren();
+  [['blank','Blank slate'],['resume','Resume'],['default','Default preset']].forEach(([k,l])=>m.append(el('button',{class:'btn alt','aria-pressed':String(S.startMode===k),onclick:()=>{S.startMode=k;save();if(k==='resume')saveSession();buildStart()}},l)));
+  $('#startnote').textContent=S.startMode==='default'&&!P.some(p=>p.id===S.defId)?'No default preset yet. Set one from a preset’s ⋯ menu.':'';
+}
+function startup(){
+  if(S.startMode==='resume'){
+    try{const r=JSON.parse(localStorage.getItem('timechunk4session'));if(r&&r.chunks)Object.assign(S,{date:r.date||S.date,start:r.start||S.start,n:r.n||0,pendW:r.pendW||0,brk:r.brk??S.brk,L:r.L||S.L,chunks:r.chunks})}catch(e){}
+  }else if(S.startMode==='default'){
+    const p=P.find(x=>x.id===S.defId);if(p)loadPresetData(p);
+  }
+  $('#date').value=S.date;$('#start').value=S.start;$('#n').value=S.n;$('#brk').value=S.brk;
+}
+buildStart();startup();
+addEventListener('pagehide',saveSession);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveSession()});
+function applyFont(){
+  const r=document.documentElement,old=document.getElementById('tcfont');if(old)old.remove();
+  const v=(S.font||'').trim();
+  if(!v){r.style.setProperty('--font',window.TCFONT);return}
+  let fam=v.replace(/["']/g,'');
+  if(/^https?:\/\//i.test(v)){
+    let u;try{u=new URL(v)}catch(e){toast('That doesn’t look like a valid URL.');r.style.setProperty('--font',window.TCFONT);return}
+    if(/\.(woff2?|ttf|otf)$/i.test(u.pathname)){
+      fam='TimechunkCustom';
+      new FontFace(fam,'url("'+v+'")').load().then(f=>document.fonts.add(f)).catch(()=>toast('Couldn’t load that font file. It may be blocked in this viewer.'));
+    }else{
+      const q=u.searchParams.get('family');fam=q?q.split(':')[0].replace(/\+/g,' '):'';
+      document.head.append(el('link',{id:'tcfont',rel:'stylesheet',href:v,onerror:()=>toast('Couldn’t load that font stylesheet. It may be blocked in this viewer.')}));
+    }
+  }else{
+    document.head.append(el('link',{id:'tcfont',rel:'stylesheet',href:'https://fonts.googleapis.com/css2?family='+encodeURIComponent(fam).replace(/%20/g,'+')+'&display=swap'}));
+  }
+  r.style.setProperty('--font',(fam?'"'+fam+'",':'')+window.TCFONT);
+}
+$('#fontin').value=S.font;
+$('#fontin').addEventListener('change',e=>{S.font=e.target.value.trim();save();applyFont()});
+// collapsible sidebar; the timer pops out as a compact mini-window bottom left
+const tsec=$('#tmrsec');
+function setCol(c){
+  S.col=c;save();document.body.classList.toggle('col',c);$('#exp2').hidden=!c;
+  if(c){tsec.classList.add('mini');document.body.append(tsec)}else{tsec.classList.remove('mini');$('.side').append(tsec)}
+  renderCal();
+}
+$('#col').addEventListener('click',()=>setCol(true));$('#exp2').addEventListener('click',()=>setCol(false));
+setCol(S.col);
+// zoom the day preview (buttons, or Ctrl/Cmd + scroll)
+function setZoom(z){
+  z=Math.min(4,Math.max(.4,Math.round(z*100)/100));if(z===S.zoom)return;
+  const m=$('.main'),topMin=m.scrollTop/(84/60*S.zoom);
+  S.zoom=z;$('#zl').textContent=Math.round(z*100)+'%';renderCal();m.scrollTop=topMin*84/60*z;
+}
+$('#zi').addEventListener('click',()=>setZoom(S.zoom*1.25));
+$('#zo').addEventListener('click',()=>setZoom(S.zoom/1.25));
+$('#zl').addEventListener('click',()=>setZoom(1));
+$('.main').addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();setZoom(S.zoom*(e.deltaY<0?1.1:1/1.1))}},{passive:false});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(S.theme==='system')applyTheme()});
+buildSnd();
+applyTheme();applyFont();sync();syncTimes();renderAll();
 setInterval(renderCal,60000);addEventListener('resize',renderCal);
 </script>
 </body>
